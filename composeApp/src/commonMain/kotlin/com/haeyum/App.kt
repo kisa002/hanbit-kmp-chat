@@ -41,7 +41,7 @@ fun App() {
         val textFieldState = rememberTextFieldState()
 
         val username = remember {
-            getPlatform().name + "-" + (0..1000).random()
+            getPlatform().name + "-" + (1..1000).random()
         }
 
         val messages = remember {
@@ -49,7 +49,7 @@ fun App() {
         }
 
         val session = produceState<WebSocketSession?>(null) {
-            client.webSocket("/chat") {
+            client.webSocket(path = "/chat") {
                 value = this
 
                 incoming
@@ -57,12 +57,12 @@ fun App() {
                     .collect { frame ->
                         when (frame) {
                             is Frame.Text -> {
-                                val message = Json.decodeFromString<Message>(frame.readText())
-                                messages.add(message)
+                                val receivedText = frame.readText()
+                                messages.add(Json.decodeFromString(receivedText))
                             }
 
                             else -> {
-                                println("SOMETHING WRONG")
+                                println("Something Wrong")
                             }
                         }
                     }
@@ -86,16 +86,9 @@ fun App() {
                     enabled = session.value != null && textFieldState.text.isNotEmpty(),
                     onSend = { messageText ->
                         coroutineScope.launch {
-                            session.value?.send(
-                                Frame.Text(
-                                    Json.encodeToString(
-                                        Message(
-                                            username,
-                                            messageText
-                                        )
-                                    )
-                                )
-                            )
+                            val message = Message(username = username, content = messageText)
+                            session.value?.send(Frame.Text(Json.encodeToString(message)))
+
                             textFieldState.clearText()
                             lazyListState.scrollToBottom()
                         }

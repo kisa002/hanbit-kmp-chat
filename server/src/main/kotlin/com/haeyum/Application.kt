@@ -4,7 +4,6 @@ import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
-import io.ktor.server.request.receive
 import io.ktor.server.request.receiveText
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.get
@@ -32,13 +31,12 @@ fun Application.module() {
         }
 
         get("/hanbit") {
-            call.respondText("GET - HANBIT")
+            call.respondText("[GET] HANBIT!")
         }
 
         post("/hanbit") {
             val receivedText = call.receiveText()
-
-            call.respondText("POST - HANBIT\n$receivedText")
+            call.respondText("[POST]\n$receivedText")
         }
 
         val clients = mutableSetOf<DefaultWebSocketSession>()
@@ -61,10 +59,11 @@ fun Application.module() {
                             }
                         }
                         else -> {
-                            println("SOMETHING WRONG")
+                            println("Something Wrong")
                         }
                     }
                 }
+
         }
     }
 }

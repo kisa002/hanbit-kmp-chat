@@ -1,5 +1,6 @@
 package com.haeyum.data
 
+import com.haeyum.API_BASE_URL
 import com.haeyum.SERVER_PORT
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.defaultRequest
